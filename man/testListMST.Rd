@@ -1,0 +1,83 @@
+\name{testListMST}
+\alias{testListMST}
+
+\title{Testing the format of the MST input lists}
+
+\description{
+ This command tests whether format of the input lists for the random generation of multistage tests is convenient, and returns a warning message otherwise.
+ }
+
+\usage{
+testListMST(list, type = "start")
+ }
+
+\arguments{
+ \item{list}{a list of arguments to be tested. See \bold{Details}.}
+ \item{type}{character: the type of list for checking. Possible values are \code{"start"} (default), \code{"test"}
+and \code{"final"}. See \bold{Details}.}
+}
+
+\value{
+ A list with two arguments:
+ \item{test}{a logical value indicating whether the format of the list is accurate (\code{TRUE}) or not (\code{FALSE}).}
+ \item{message}{either a message to indicate the type of misspecification, or \code{"ok"} if the format is accurate.}
+ }
+ 
+
+\details{
+ The \code{testListMST} function checks whether the list provided in the \code{list} argument is accurate for the selected \code{type}. It mainly serves as an initial check for the \code{\link{randomMST}} function. 
+
+ The three types of lists are: \code{"start"} with the parameters for selecting the first module; \code{"test"} with
+ the options of the multistage test (i.e. method for next module selection, provisional ability estimator and related information); and \code{"final"} with the options for final ability estimation. 
+ See the help file of \code{\link{randomMST}} for further details about the different lists, their allowed arguments and their contents.
+
+ The function returns an \code{"ok"} message if the arguments of \code{list} match the requirement of the corresponding \code{type}. Otherwise, a message is returned with information about list - type mismatch. This will be the case
+ if:
+ \itemize{
+ \item{\code{list} is not a list, or has no argument names,}
+ \item{\code{list} has too many arguments for the \code{type} specified,}
+ \item{at least one of the argument names is incorrect,}
+ \item{the content of at least one argument is not adequate (e.g. character instead of numeric).}
+ }
+ Each mismatch yields a different output message to help in debugging the problem.
+ }
+
+\references{
+Magis, D. and Barrada, J. R. (2017). Computerized Adaptive Testing with R: Recent Updates of the Package \emph{catR}. \emph{Journal of Statistical Software}, \emph{Code Snippets}, \emph{76(1)}, 1-19. \doi{10.18637/jss.v076.c01}
+}
+
+\author{
+    David Magis \cr
+    Department of Education, University of Liege, Belgium \cr
+    \email{david.magis@ulg.ac.be}
+ }
+
+\seealso{
+\code{\link{randomMST}}
+} 
+
+\examples{
+
+ # Creation and test of a 'start' list
+ start <- list(theta = 0)
+ testListMST(start, type = "start")
+
+ # Creation and test of a 'test' list
+ test <- list(method = "WL", moduleSelect = "MFI", constantPatt = "fixed4")
+ testListMST(test, type = "test")
+
+ # Creation and test of a 'final' list (with mistake)
+ final <- list(method = "MAP")
+ testListMST(final, type = "final")
+
+# Creation of cut-off scores for ability levels: cut score 0 between modules 3 and 4
+ # and cut scores -1 and 1 between modules 5, 6 and 7
+ cut <- matrix(NA, 7, 2)
+ cut[3,] <- c(-Inf, 0)
+ cut[4,] <- c(0, Inf)
+ cut[5,] <- c(-Inf, -1)
+ cut[6,] <- c(-1, 1)
+ cut[7,] <- c(1, Inf)
+ test <- list(method = "WL", constantPatt = "fixed4", cutoff = cut)
+ testListMST(test, "test")
+ }
