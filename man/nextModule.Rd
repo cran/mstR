@@ -11,7 +11,7 @@
 nextModule(itemBank, modules, transMatrix, model = NULL, current.module,
    out, x = NULL, cutoff = NULL, theta = 0, criterion = "MFI",
    priorDist = "norm", priorPar = c(0, 1), D = 1, range = c(-4, 4), 
-   parInt = c(-4, 4, 33))
+   parInt = c(-4, 4, 33), randomesque = 1, random.seed = NULL)
  }
 
 
@@ -31,6 +31,8 @@ nextModule(itemBank, modules, transMatrix, model = NULL, current.module,
  \item{D}{numeric: the metric constant. Default is \code{D=1} (for logistic metric); \code{D=1.702} yields approximately the normal metric (Haley, 1952).}
  \item{range}{numeric: vector of two components specifying the range wherein the ability estimate must be looked for (default is \code{c(-4,4)}).}
  \item{parInt}{numeric: a vector of three numeric values, specifying respectively the lower bound, the upper bound and the number of quadrature points for numerical integration (default is \code{c(-4,4,33)}). Ignored if \code{method} is neither \code{"MLWMI"}, \code{"MPWMI"}, \code{"KL"}, nor \code{"KLP"}, or if \code{cutoff} is not \code{NULL}. See \bold{Details}.}
+ \item{randomesque}{numeric: a probability value to select the optimal module. Default is one so optimal module is always chosen. See \bold{Details}.}
+\item{random.seed}{either \code{NULL} (default) or a numeric value to fix the random seed of randomesque selection of the module. Ignored if \code{randomesque} is equal to one.}
 }
 
 \value{
@@ -68,9 +70,13 @@ Optimal module selection is performed by providing an appropriate value to the \
 }
 See \code{\link{MWMI}} and \code{\link{MKL}} for further details.
 
-In case of selection by predefined cut-off scores, the \code{cutoff} argument must be supplied by a matrix with as many rows as modules in the item bank and with two columns. Each row of the \code{cutoff} matrix holds the lower and upper cut-off value and the next module is selected (among those available in the correct stage) such that the current \code{ability} score lies between the two cut-off scores. For instance, if modules 2 and 3 are the two potential modules to be selected, if \code{cutoff[2, 1:2]} is \code{c(0, 5)} and if \code{cutoff[3, 1:2]} is \code{c(5, 10)}, then module 2 will be selected if \code{theta} belongs to \eqn{[0, 5)} and module 3 is selected if \code{theta} belongs to \eqn{[5, 10)}. Other examples are provided in the \bold{Examples} section. All modules from stage 1 must have cut-off scores too for compatibility, but any value (including \code{NA}) is allowed as they will not be used. Note that integer cut-off scores (when \code{theta} is the test score) or numeric values (when \code{theta} is an ability estimate) are allowed in the \code{cutoff} matrix.
+In case of selection by predefined cut-off scores, the \code{cutoff} argument must be supplied by a matrix with as many rows as the number of thresholds between pairs of modules, and with three columns. Each row of the \code{cutoff} matrix holds first the two module indicators (i.e., their column number in the \code{modules} matrix) and then the threshold. For instance, the row \code{c(3, 4, 1)} indicates that the selection threshold between modules 3 and 4 is 1. Thus, if the next module must be chosen between modules 3 and 4, the module 3 is selected if the score is \emph{strictly smaller} than 1, and module 4 is chosen if the score is gretar than or equal to 1.
+
+This allows the selection among multiple modules within a stage as follows. Let modules 5 to 7 be the allowed moduels for selection, and set -1 and 1 as thresholds to distinguish between modules 5 and 6 and modules 6 and 7. By this way, module 5 is chosen if the score is strictly smaller than -1, module 7 if the score is larger than (or equal to) 1, and module 6 otherwise. This design is simply modeled through the \code{cutoff} matrix by including the rows \code{c(5, 6, -1)} nd \code{c(6, 7, 1)}. Note that the order of the rows in the \code{cutoff} matrix is irrelevant. Moreover, integer cut-off scores (when \code{theta} is the test score) or numeric values (when \code{theta} is an ability estimate) are allowed in the \code{cutoff} matrix.
 
 By default \code{cutoff} is \code{NULL} and optimal module selection is performed). 
+
+Whatever the method for next module selection (by optimal criterion or via cut-off scores), the \code{randomesque} argument allows for selecting a module that is not the optimal one. This argument takes a probability value (i.e., between zero and one) that sets the probability that the optimal module is eventually selected. All other elligible modules from the stage will be randomly chosen with a probability equal to (1-\code{randomesque})/\eqn{K-1} where \eqn{K} is he number of elligible modules in the stage (including the optimal one). This allows for module overexposure control. The \code{random.seed} argument permits ot fix the seed for random selection. 
  }
 
 
@@ -83,8 +89,8 @@ By default \code{cutoff} is \code{NULL} and optimal module selection is performe
 
 \author{
     David Magis \cr
-    Department of Education, University of Liege, Belgium \cr
-    \email{david.magis@ulg.ac.be}
+    Department of Psychology, University of Liege, Belgium \cr
+    \email{david.magis@uliege.be}
  }
 
 \seealso{
@@ -136,12 +142,7 @@ trans[1, 3:4] <- trans[2, 3:4] <- trans[3, 5:7] <- trans[4, 5:7] <- 1
 
  # Creation of cut-off scores for ability levels: cut score 0 between modules 3 and 4
  # and cut scores -1 and 1 between modules 5, 6 and 7
-cut <- matrix(NA, 7, 2)
-cut[3,] <- c(-Inf, 0)
-cut[4,] <- c(0, Inf)
-cut[5,] <- c(-Inf, -1)
-cut[6,] <- c(-1, 1)
-cut[7,] <- c(1, Inf)
+ cut <- rbind(c(3, 4, 0), c(5, 6, -1), c(6, 7, 1))
 
  # Selection by cut-off score, module 1 previously administered, current ability level 0 
  # (=> module 4 is chosen)
@@ -158,14 +159,13 @@ cut[7,] <- c(1, Inf)
  nextModule(it, modules, trans, current.module = 3, out = c(1:8, 17:22), cutoff = cut, 
            theta = 2)
 
+ # Ranomesque probability 0.5 and random.seed value 2 (=> module 6 is chosen)
+ nextModule(it, modules, trans, current.module = 3, out = c(1:8, 17:22), cutoff = cut, 
+           theta = 2, randomesque = 0.5, random.seed = 2)
+
  # Creation of cut-off scores for test scores: cut score 4 between modules 3 and 4
  # and cut scores 5 and 9 between modules 5, 6 and 7
-cut.score <- matrix(NA, 7, 2)
-cut.score [3,] <- c(0, 4)
-cut.score [4,] <- c(4, 8)
-cut.score [5,] <- c(0, 5)
-cut.score [6,] <- c(5, 9)
-cut.score [7,] <- c(9, 14)
+ cut.score <- rbind(c(3, 4, 4), c(5, 6, 5), c(6, 7, 9))
 
  # Module 1 previously administered, current test score 1 (=> module 3 is chosen)
  nextModule(it, modules, trans, current.module = 1, out = 1:8, cutoff = cut.score, 

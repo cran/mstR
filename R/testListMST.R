@@ -11,10 +11,11 @@ testListMST<-function (list, type = "start")
                 sep = ""))
         else {
             elements <- switch(type, start = c("fixModule", "seed", 
-                "theta", "D"), test = c("method", "priorDist", "priorPar", "range", 
-                  "D", "parInt", "moduleSelect", "constantPatt", "cutoff"), 
-                 final = c("method", "priorDist", "priorPar", "range", "D", "alpha", 
-                  "parInt"))
+                "theta", "D"), test = c("method", "priorDist", 
+                "priorPar", "range", "D", "parInt", "moduleSelect", 
+                "constantPatt", "cutoff","randomesque","random.seed","score.range"), final = c("method", 
+                "priorDist", "priorPar", "range", "D", "alpha", 
+                "parInt"))
             if (is.null(elements)) 
                 res <- list(test = FALSE, message = paste("invalid 'type' argument ('", 
                   type, "' is not allowed)", sep = ""))
@@ -48,7 +49,7 @@ testListMST<-function (list, type = "start")
                   }
                   else {
                     intNames <- c("fixModule")
-                    seedNames <- c("seed")
+                    seedNames <- c("seed","random.seed")
                     numNames <- c("alpha", "D", "theta")
                     metNames <- c("method")
                     priorNames <- c("priorDist")
@@ -58,19 +59,22 @@ testListMST<-function (list, type = "start")
                     constantNames <- c("constantPatt")
                     matrixNames <- c("cutoff")
                     logicNames <- c("cb.control")
+                    probNames<-c("randomesque")
+                    scoreNames<-c("score.range")
                     i <- 0
                     repeat {
                       i <- i + 1
                       vect <- c(sum(names(list)[i] == intNames), 
                         sum(names(list)[i] == seedNames), sum(names(list)[i] == 
                           numNames), sum(names(list)[i] == metNames), 
-                          sum(names(list)[i] == priorNames), sum(names(list)[i] == 
+                        sum(names(list)[i] == priorNames), sum(names(list)[i] == 
                           parNames), sum(names(list)[i] == eapNames), 
-                          sum(names(list)[i] == moduleSelectNames), 
-                          sum(names(list)[i] == constantNames), 
-                          sum(names(list)[i] == matrixNames), 
-                          sum(names(list)[i] == logicNames))
-                      ind <- (1:11)[vect == 1]
+                        sum(names(list)[i] == moduleSelectNames), 
+                        sum(names(list)[i] == constantNames), 
+                        sum(names(list)[i] == matrixNames), sum(names(list)[i] == 
+                          logicNames), sum(names(list)[i] == probNames),
+                          sum(names(list)[i] == scoreNames))
+                      ind <- (1:13)[vect == 1]
                       prov <- switch(ind, `1` = ifelse(is.null(list[[i]]), 
                         TRUE, ifelse(is.numeric(list[[i]]), ifelse(max(abs(list[[i]] - 
                           round(list[[i]]))) <= 1e-04, TRUE, 
@@ -80,22 +84,27 @@ testListMST<-function (list, type = "start")
                           TRUE, FALSE))), `3` = (is.numeric(list[[i]]) & 
                         length(list[[i]]) == 1), `4` = (is.list(list[[i]]) == 
                         FALSE & length(list[[i]]) == 1 & sum(list[[i]] == 
-                        c("ML", "BM", "WL", "EAP","score")) == 1), `5` = (is.list(list[[i]]) == 
-                        FALSE & length(list[[i]]) == 1 & sum(list[[i]] == 
+                        c("ML", "BM", "WL", "EAP", "score")) == 
+                        1), `5` = (is.list(list[[i]]) == FALSE & 
+                        length(list[[i]]) == 1 & sum(list[[i]] == 
                         c("norm", "unif", "Jeffreys")) == 1), 
                         `6` = (is.numeric(list[[i]]) & length(list[[i]]) == 
-                          2), `7` = (!is.list(list[[i]]) & 
-                          length(list[[i]]) == 3 & is.numeric(list[[i]]) == 
-                          TRUE & abs(list[[i]][3] - round(list[[i]][3])) <= 
-                          1e-04), `8` = (is.list(list[[i]]) == 
+                          2), `7` = (!is.list(list[[i]]) & length(list[[i]]) == 
+                          3 & is.numeric(list[[i]]) == TRUE & 
+                          abs(list[[i]][3] - round(list[[i]][3])) <= 
+                            1e-04), `8` = (is.list(list[[i]]) == 
                           FALSE & length(list[[i]]) == 1 & sum(list[[i]] == 
-                          c("MFI", "MLMWI", "MPMWI", "MKL", "MKLP",  
-                          "random")) == 1), `9` = ifelse(is.null(list[[i]]), 
+                          c("MFI", "MLMWI", "MPMWI", "MKL", "MKLP", 
+                            "random")) == 1), `9` = ifelse(is.null(list[[i]]), 
                           TRUE, ifelse(sum(list[[i]] == c("fixed4", 
-                          "fixed7", "var", "BM", "EAP", "WL")) == 
-                          1, TRUE, FALSE)), `10` = ifelse(is.matrix(list[[i]]), 
+                            "fixed7", "var", "BM", "EAP", "WL")) == 
+                            1, TRUE, FALSE)), `10` = ifelse(is.matrix(list[[i]]), 
                           TRUE, FALSE), `11` = ifelse(is.logical(list[[i]]), 
-                          TRUE, FALSE))
+                          TRUE, FALSE), `12` = ifelse(is.numeric(list[[i]]),
+                          ifelse(length(list[[i]])==1,ifelse(list[[i]]>=0 & 
+                          list[[i]]<=1,TRUE,FALSE),FALSE),FALSE),
+                          `13` = ifelse(sum(list[[i]]==c("all","last"))==1,
+                          TRUE ,FALSE))
                       if (!prov) {
                         res$test <- FALSE
                         res$message <- switch(ind, `1` = paste("element '", 
@@ -121,18 +130,24 @@ testListMST<-function (list, type = "start")
                           "' must be a vector of two numeric and", 
                           "\n", " one integer components", sep = ""), 
                           `8` = paste("element '", names(list)[i], 
-                          "' of '", deparse(substitute(list)), 
-                          "' must be either 'MFI', 'MLMWI',", 
-                          "\n", " 'MPMWI', 'MKL', 'MKLP' or 'random'", 
-                          sep = ""), `9` = paste("element '", 
-                          names(list)[i], "' of '", deparse(substitute(list)), 
-                          "' must be either 'fixed4', 'fixed7', 'var' or NULL", 
-                          sep = ""), `10` = paste("element '", 
+                            "' of '", deparse(substitute(list)), 
+                            "' must be either 'MFI', 'MLMWI',", 
+                            "\n", " 'MPMWI', 'MKL', 'MKLP' or 'random'", 
+                            sep = ""), `9` = paste("element '", 
+                            names(list)[i], "' of '", deparse(substitute(list)), 
+                            "' must be either 'fixed4', 'fixed7', 'var' or NULL", 
+                            sep = ""), `10` = paste("element '", 
                             names(list)[i], "' of '", deparse(substitute(list)), 
                             "' must be a suitable matrix of cut-off values", 
                             sep = ""), `11` = paste("element '", 
                             names(list)[i], "' of '", deparse(substitute(list)), 
                             "' must be either 'TRUE' or 'FALSE'", 
+                            sep = ""), `12` = paste("element '", 
+                            names(list)[i], "' of '", deparse(substitute(list)), 
+                            "' must be a single numeric value between 0 and 1", 
+                            sep = ""),`13` = paste("element '", 
+                            names(list)[i], "' of '", deparse(substitute(list)), 
+                            "' must be either 'all' or 'last'", 
                             sep = ""))
                         break
                       }

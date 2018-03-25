@@ -32,8 +32,8 @@ Maechler, M. et al. (2012). \emph{sfsmisc: Utilities from Seminar fuer Statistik
 
 \author{
     David Magis \cr
-    Department of Education, University of Liege, Belgium \cr
-    \email{david.magis@ulg.ac.be}
+    Department of Psychology, University of Liege, Belgium \cr
+    \email{david.magis@uliege.be}
  }
 
 \seealso{

@@ -6,17 +6,49 @@
 
 
 ------------------------------------
-- Changes in mstR 1.1 (20xx-xx-xx) -
+- Changes in mstR 1.1 (2018-03-23) -
 ------------------------------------
 
 MAJOR UPDATES
 
-  o  
+  o  The specification of the matrix of cut-off scores was 
+     modified to simplify the definition of the selection
+     thresholds. This modification also solved a problem of
+     module selection that appeared in some specific MST
+     designs and extreme response scores. Many thanks to
+     Yuan-Ling (Linda) Liaw (CEMO, Oslo, Norway; 
+     y.l.liaw@cemo.uio.no) for noticig this issue.
+
+  o  The plot.mst() function allows now to represent the MST
+     structure as a graph just by providing the transition
+     matrix (and not the output of randomMST() function). 
+
+  o  The 'randomesque' option was added to the nextModule()
+     function. 'randomesque' takes a probability value 
+     between zero and one; the optimal module is chosen with
+     probability 'randomesque' and other elligible modules in
+     the stage are chosen with probability (1-'randomesque')
+     divided by the nimber of other (non-optimal) modules.
+     This is to control module overexposure in a similar 
+     fashion to the CAT context.
+
+  o  The 'score.range' argument was added to the 'test' list
+     of randomMST() function. It determines on the basis of 
+     which module(s) must the provisional test score be
+     computed, either on all previously administered modules
+     ("all") or on the last module only ("last").
+
+  o  Functions testListMST() and randomMST() were updated 
+     accordingly.
+
 
 
 MINOR UPDATES
 
-  o  
+  o  Main author's affiliation and email address was 
+     updated.
+
+  o  Some typos were fixed.
 
 
 

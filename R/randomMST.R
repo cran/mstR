@@ -3,14 +3,15 @@ randomMST<-function (trueTheta=NULL, itemBank, modules, transMatrix, model = NUL
         D = 1), test = list(method = "BM", 
         priorDist = "norm", priorPar = c(0, 1), range = c(-4, 
             4), D = 1, parInt = c(-4, 4, 33), moduleSelect = "MFI", 
-            constantPatt = NULL, cutoff=NULL), 
+            constantPatt = NULL, cutoff=NULL,randomesque=1,random.seed=NULL,
+score.range="all"), 
     final = list(method = "BM", 
         priorDist = "norm", priorPar = c(0, 1), range = c(-4, 
             4), D = 1, parInt = c(-4, 4, 33), alpha = 0.05), 
     allTheta = FALSE, save.output = FALSE, output = c("path", 
         "name", "csv")) 
 {
-if (is.null(trueTheta) & is.null(responses)) break("Either 'trueTheta' or 'responses' argument must be supplied",call.=FALSE)
+if (is.null(trueTheta) & is.null(responses)) stop("Either 'trueTheta' or 'responses' argument must be supplied",call.=FALSE)
 if (!testListMST(start, type = "start")$test) 
         stop(testListMST(start, type = "start")$message, call. = FALSE)
     if (!testListMST(test, type = "test")$test) 
@@ -29,7 +30,8 @@ if (!is.null(responses))
         start <- startList
         testList <- list(method = NULL, priorDist = NULL, priorPar = c(0, 
             1), range = c(-4, 4), D = 1, parInt = c(-4, 4, 33), 
-            moduleSelect = "MFI", constantPatt = NULL, cutoff=NULL)
+            moduleSelect = "MFI", constantPatt = NULL, cutoff=NULL,randomesque=1,
+            random.seed=NULL,score.range="all")
         testList$method <- ifelse(is.null(test$method), "BM", 
             test$method)
         testList$priorDist <- ifelse(is.null(test$priorDist), 
@@ -55,6 +57,12 @@ if (!is.null(responses))
             testList$constantPatt <- test$constantPatt
 if (!is.null(test$cutoff)) 
             testList$cutoff<- test$cutoff
+if (!is.null(test$randomesque)) 
+            testList$randomesque<- test$randomesque
+if (!is.null(test$random.seed)) 
+            testList$random.seed<- test$random.seed
+if (!is.null(test$score.range)) 
+            testList$score.range<- test$score.range
         test <- testList
         finalList <- list(method = NULL, priorDist = NULL, priorPar = c(0, 
             1), range = c(-4, 4), D = 1, parInt = c(-4, 4, 33), 
@@ -81,7 +89,7 @@ if (!is.null(test$cutoff))
             final$alpha)
         final <- finalList
 
-if (test$method=="score" & is.null(test$cutoff)) break("'cutoff' argument of 'test' list must be supplied when 'method' is 'score'",call.=FALSE)
+if (test$method=="score" & is.null(test$cutoff) & test$moduleSelect!="random") stop("'cutoff' argument of 'test' list must be supplied when 'method' is 'score'",call.=FALSE)
         pr0 <- startModule(itemBank = itemBank, modules=modules, transMatrix=transMatrix,
                 model = model,  fixModule = start$fixModule, seed = start$seed,
                 theta = start$theta, D = start$D)
@@ -140,6 +148,8 @@ confIntFinal<-c(NA,NA)
                 provPar = test$priorPar, provRange = test$range, 
                 provD = test$D, moduleSelect = test$moduleSelect, 
                 constantPattern = test$constantPatt, cutoff=test$cutoff,
+                randomesque=test$randomesque,random.seed=test$random.seed,
+                score.range=test$score.range,
                 finalMethod = final$method, finalDist = final$priorDist, 
                 finalPar = final$priorPar, finalRange = final$range, 
                 finalD = final$D, finalAlpha = final$alpha, save.output = save.output, 
@@ -152,7 +162,8 @@ confIntFinal<-c(NA,NA)
                   out = ITEMS, x = PATTERN, cutoff=test$cutoff, criterion = test$moduleSelect, 
                   parInt = test$parInt, 
                   priorDist = test$priorDist, priorPar = test$priorPar, 
-                  D = test$D, range = test$range)
+                  D = test$D, range = test$range,randomesque=test$randomesque,
+                  random.seed=test$random.seed)
                 ITEMS <- c(ITEMS, pr$items)
 ITEMS.PER.MOD<-c(ITEMS.PER.MOD,length(pr$items))
                 PAR <- rbind(PAR, pr$par)
@@ -166,7 +177,13 @@ if (test$method!="score")
                   priorPar = test$priorPar, range = test$range, 
                   parInt = test$parInt, current.th = TH[length(TH)], 
                   constantPatt = test$constantPatt, bRange = range(itemBank[,2]))
-else thProv<-sum(PATTERN)
+else {
+if (test$score.range=="all") thProv<-sum(PATTERN)
+else{
+nr<-length(pr$items)
+thProv<-sum(PATTERN[(length(PATTERN)-nr+1):(length(PATTERN))])
+}
+}
                 TH <- c(TH, thProv)
 if (test$method!="score")
                 seProv <- semTheta(thProv, PAR, x = PATTERN, 
@@ -208,6 +225,8 @@ transMatrix=transMatrix,
                 provPar = test$priorPar, provRange = test$range, 
                 provD = test$D, moduleSelect = test$moduleSelect, 
                 constantPattern = test$constantPatt, cutoff=test$cutoff,
+                randomesque=test$randomesque,random.seed=test$random.seed,
+                score.range=test$score.range,
                 finalMethod = final$method, finalDist = final$priorDist, 
                 finalPar = final$priorPar, finalRange = final$range, 
                 finalD = final$D, finalAlpha = final$alpha, save.output = save.output, 
@@ -377,12 +396,22 @@ cat("     (random selection among allowed modules)","\n")
             "\n")
     if (x$provMethod == "ML") 
         cat("   Provisional range of ability values:", ra1, "\n")
+    if (x$provMethod == "score") {
+if (x$score.range=="all") type1<-"all previous modules)"
+else type1<-"last module only)"
+        cat("     (provisional score computed on", type1, "\n")
+}
     if (!is.null(x$model) | is.null(x$constantPattern) | x$provMethod=="score") 
         adj <- "none"
     else adj <- switch(x$constantPattern, fixed4 = "fixed .4 stepsize", 
         fixed7 = "fixed .7 stepsize", var = "variable stepsize")
     cat("   Ability estimation adjustment for constant pattern:", 
         adj, "\n")
+    if (x$randomesque==1)  cat("   Randomesque selection of optimal module: no","\n")
+else {
+cat("   Randomesque selection of optimal module: yes","\n")
+cat("     Probability to select optimal module:",x$randomesque,"\n")
+}
     cat("\n", "Multistage test details:", "\n")
 binf<-1
 for (co in 1:length(x$selected.modules)){
@@ -451,12 +480,18 @@ cat("\n")
 #####
 
 plot.mst<-function (x, show.path = TRUE, border.col = "red", arrow.col = "red", 
-    module.names=NULL, save.plot = FALSE, save.options = c("path", "name", "pdf"), 
-    ...) 
+    module.names = NULL, save.plot = FALSE, save.options = c("path", 
+        "name", "pdf"), ...) 
 {
     internalMST <- function() {
         nr <- 0
-        tr <- x$transMatrix
+if (class(x)!="mst" & class(x)!="matrix") stop("'x' must be a list of class 'mst' or a transition matrix",call.=FALSE)
+  if (class(x)=="matrix") {
+x<-list(transMatrix=x)
+SHOW.path<-FALSE
+}
+else SHOW.path<-show.path
+tr <- x$transMatrix
         nr.st <- NULL
         repeat {
             nr <- nr + 1
@@ -497,10 +532,12 @@ plot.mst<-function (x, show.path = TRUE, border.col = "red", arrow.col = "red",
             }
         }
         for (i in 1:length(xcenter)) {
-if (is.null(module.names)) text(xcenter[i], ycenter[i], paste("Module", i))
-else text(xcenter[i], ycenter[i], module.names[i])
-}
-        if (show.path) {
+            if (is.null(module.names)) 
+                text(xcenter[i], ycenter[i], paste("Module", 
+                  i))
+            else text(xcenter[i], ycenter[i], module.names[i])
+        }
+        if (SHOW.path) {
             for (i in 1:length(x$selected.modules)) {
                 ind <- x$selected.modules[i]
                 rect(allleft[ind], alldown[ind], allright[ind], 

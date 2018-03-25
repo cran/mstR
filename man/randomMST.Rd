@@ -15,10 +15,11 @@ randomMST(trueTheta, itemBank, modules, transMatrix, model = NULL,
   responses = NULL, genSeed = NULL, start = list(fixModule = NULL, seed = NULL, 
   theta = 0, D = 1), test = list(method = "BM", priorDist = "norm", 
   priorPar = c(0, 1), range = c(-4, 4), D = 1, parInt = c(-4, 4, 33), 
-  moduleSelect = "MFI", constantPatt = NULL, cutoff=NULL), 
-  final = list(method = "BM", priorDist = "norm", priorPar = c(0, 1), 
-  range = c(-4, 4), D = 1, parInt = c(-4, 4, 33), alpha = 0.05), allTheta = FALSE, 
-  save.output = FALSE, output = c("path", "name", "csv"))
+  moduleSelect = "MFI", constantPatt = NULL, cutoff = NULL, randomesque = 1,
+  random.seed = NULL, score.range = "all"), final = list(method = "BM", 
+  priorDist = "norm", priorPar = c(0, 1), range = c(-4, 4), D = 1, 
+  parInt = c(-4, 4, 33), alpha = 0.05), allTheta = FALSE, save.output = FALSE, 
+  output = c("path", "name", "csv"))
 \method{print}{mst}(x, ...)
 \method{plot}{mst}(x, show.path = TRUE, border.col = "red", arrow.col = "red",
   module.names = NULL, save.plot = FALSE, save.options = c("path", "name", "pdf"),...)
@@ -38,7 +39,7 @@ randomMST(trueTheta, itemBank, modules, transMatrix, model = NULL,
 \item{allTheta}{logical: should all provisional ability estimates and standard errors be computed and returned (even within each module)? Default is \code{FALSE}, meaning that provisional ability estimates and standard errors are computed only at the end of each module administration.}
  \item{save.output}{logical: should the output be saved in an external text file? (default is \code{FALSE}).}
  \item{output}{character: a vector of three components. The first component is either the file path to save the output of \code{"path"} (default), the second component is the name of the output file, and the third component is the file type, either \code{"txt"} or \code{"csv"} (default). See \bold{Details}.}
- \item{x}{an object of class "mst", typically an output of \code{randomMST} function.}
+ \item{x}{either an object of class "mst", typically an output of \code{randomMST} function, or a transition matrix (for \code{plot.mst()} function only).}
 \item{show.path}{logical: should the selected path (i.e. set of successive modules) be highlighted in the plot (default is TRUE)?}
 \item{border.col}{character: the color for the rectangle border of the path (i.e. selected modules). Default is \code{"red"}. Ignored if \code{show.path} is \code{FALSE}.}
 \item{arrow.col}{character: the color for the connecting arrows in the path (i.e. between selected modules). Default is \code{"red"}. Ignored if \code{show.path} is \code{FALSE}.}
@@ -79,6 +80,9 @@ randomMST(trueTheta, itemBank, modules, transMatrix, model = NULL,
  \item{moduleSelect}{the value of the \code{test$moduleSelect} argument (or its default value if missing).}
 \item{constantPattern}{the value of the \code{test$constantPatt} argument (or its default value if missing).}
  \item{cutoff}{the value of the \code{test$cutoff} argument (or its default value if missing).}
+ \item{randomesque}{the value of the \code{test$randomesque} argument (or its default value if missing).}
+ \item{random.seed}{the value of the \code{test$random.seed} argument (or its default value if missing).}
+ \item{score.range}{the value of the \code{test$score.range} argument (or its default value if missing).}
  \item{finalMethod}{the value of the \code{final$method} argument (or its default value if missing).}
  \item{finalDist}{the value of the \code{final$priorDist} argument (or its default value if missing).}
  \item{finalPar}{the value of the \code{final$priorPar} argument (or its default value if missing).}
@@ -142,6 +146,10 @@ The \code{test} list can contain one or several of the following arguments:
 This argument is ignored if \code{cutoff} is supplied appropriately. See \code{nextModule} for further details.}
 \item{\code{constantPatt}: the method to estimate ability in case of constant pattern (i.e. only correct or only incorrect responses). Can be either \code{NULL} (default), \code{"BM"}, \code{"EAP"}, \code{"WL"}, \code{"fixed4"} (for fixed stepsize adjustment with step 0.4), \code{"fixed7"} (for fixed stepsize adjustment with step 0.7), or \code{"var"} (for variable stepsize adjustment). This is currently implemented only for dichotomous IRT models and is sgnored if \code{method} is \code{"score"}. See \code{\link{thetaEst}} for further details.}
 \item{\code{cutoff}: either \code{NULL} (default) or a suitable matrix of thresholds to select the next module. Thresholds can reflect module selection based on ability estimation (and then \code{method} should hold one of the ability estimation methods) or on provisional test score (and then \code{method} must be set to \code{"score"}. See \code{\link{nextModule}} for further details about suitable definition of the \code{cutoff} matrix (and the examples below).}
+\item{\code{randomesque}: a probability value to select the optimal module. Default is one, so the optimal module is always chosen. With a value smaler than one, other elligible modules can be selected.}
+\item{\code{random.seed}: either \code{NULL} (default) or a numeric value to fix the random seed of randomesque selection of the module. Ignored if \code{randomesque} is equal to one.}
+\item{\code{score.range}: a character value that specifies on which set of modules the provisional test score should be computed. Possible values are \code{"all"} (default) to compute the score with all previously administered modules, or \code{"last"} to compute the score only with the last module. Ignored if \code{method} is not \code{"score"}.}
+
  }
  These arguments are passed to the functions \code{\link{thetaEst}} and \code{\link{semTheta}} to estimate the ability level and the standard error of this estimate. In addition, some arguments are passed to \code{\link{nextModule}} to select the next module appropriately.
 
@@ -156,7 +164,9 @@ Usually the ability estimates and related standard errors are computed right aft
  The output of \code{randomMST}, as displayed by the \code{print.mst} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} (the default value \code{FALSE} does not execute the storage). In this case, the \code{(output} argument mus hold three character values: the path to where the output file must be stored, the name of
  the output file, and the type of output file. If the path is not provided (i.e. left to its default value \code{"path"}), it will be saved in the default working directory. The default name is \code{"name"}, and the default type is \code{"csv"}. Any other value yields a text file. See the \bold{Examples} section for an illustration. 
 
- The function \code{plot.mst} represents the whole MST structure with as many rectangles as there are available modules, arriows connecting all the modules according to the \code{transMatrix} structure. Each stage is displayed as one horizontal layout with stage 1 on the top and final stage at the bottom of the figure. The selected path (i.e. set of modules) is displayed on the plot when \code{show.path} is \code{TRUE} (which is the default value). Modules from the path and arrows between them are then highlighted in red (by default), and these colors can be modified by settong \code{border.col} and \code{arrow.col} arguments with appropriate color names. By default, modules are labelled as ``module 1", ``module 2" etc., the numbering starting from left module to right module and from stage 1 to last stage. These labels can be modified by providing a vector of character names to argument \code{module.names}. This vector must have as many components as the total number of modules and being ordered identically as described above.
+ The function \code{plot.mst} represents the whole MST structure with as many rectangles as there are available modules, arrows connecting all the modules according to the \code{transMatrix} structure. Each stage is displayed as one horizontal layout with stage 1 on the top and final stage at the bottom of the figure. The selected path (i.e. set of modules) is displayed on the plot when \code{show.path} is \code{TRUE} (which is the default value). Modules from the path and arrows between them are then highlighted in red (by default), and these colors can be modified by settong \code{border.col} and \code{arrow.col} arguments with appropriate color names. By default, modules are labelled as ``module 1", ``module 2" etc., the numbering starting from left module to right module and from stage 1 to last stage. These labels can be modified by providing a vector of character names to argument \code{module.names}. This vector must have as many components as the total number of modules and being ordered identically as described above.
+
+Note that the MST structure can be graphically displayed by only providing (as \code{x} argument) the transition matrix of the MST. In this case, \code{show.path} argument is ignored. This is useful to represent the MST structure set by the transition matrix without running an MST simulation.
 
  Finally, the plot can be saved in an external file, either as PDF or JPEG format. First, the argument \code{save.plot} must be set to \code{TRUE} (default is \code{FALSE}). Then, the file path for figure storage, the name of the figure and its format are specified through the argument \code{save.options}, all as character strings. See the \code{Examples} section for further information and a practical example.
 
@@ -186,8 +196,8 @@ Usually the ability estimates and related standard errors are computed right aft
 
 \author{
     David Magis \cr
-    Department of Education, University of Liege, Belgium \cr
-    \email{david.magis@ulg.ac.be}
+    Department of Psychology, University of Liege, Belgium \cr
+    \email{david.magis@uliege.be}
 
 Duanli Yan \cr
 Educational Testing Service, Princeton, USA \cr
@@ -245,36 +255,36 @@ Educational Testing Service, Princeton, USA \cr
  # Module selection by cut-scores for ability estimates
  # Creation of cut-off scores for ability levels: cut score 0 between modules 3 and 4
  # and cut scores -1 and 1 between modules 5, 6 and 7
- cut <- matrix(NA, 7, 2)
- cut[3,] <- c(-Inf, 0)
- cut[4,] <- c(0, Inf)
- cut[5,] <- c(-Inf, -1)
- cut[6,] <- c(-1, 1)
- cut[7,] <- c(1, Inf)
- test <- list(method = "WL", constantPatt = "fixed4", cutoff = cut)
+ # randomesque selection with probability .8
+ cut <- rbind(c(3, 4, 0), c(5, 6, -1), c(6, 7, 1))
+ test <- list(method = "WL", constantPatt = "fixed4", cutoff = cut, randomesque = 0.8)
  res <- randomMST(trueTheta = 1, itemBank = it, modules = modules, transMatrix = trans,
                    start = start, test = test, final = final, allTheta = TRUE) 
 
  # Module selection by cut-scores for test scores
  # Creation of cut-off scores for test scores: cut score 4 between modules 3 and 4
  # and cut scores 5 and 9 between modules 5, 6 and 7
- cut.score <- matrix(NA, 7, 2)
- cut.score [3,] <- c(0, 4)
- cut.score [4,] <- c(4, 8)
- cut.score [5,] <- c(0, 5)
- cut.score [6,] <- c(5, 9)
- cut.score [7,] <- c(9, 14)
+ cut.score <- rbind(c(3, 4, 4), c(5, 6, 5), c(6, 7, 9))
  test <- list(method = "score", cutoff = cut.score)
  final <- list(method = "score")
  res <- randomMST(trueTheta = 1, itemBank = it, modules = modules, transMatrix = trans,
                    start = start, test = test, final = final, allTheta = TRUE) 
 
+ # Modification of cut-scores of stage 3 to use only the last module from stage 2 (6 items):
+ # cut scores 2 and 4 between modules 5, 6 and 7
+ cut.score2 <- rbind(c(3, 4, 4), c(5, 6, 2), c(6, 7, 4))
+ test <- list(method = "score", cutoff = cut.score2, score.range = "last")
+ final <- list(method = "score")
+ res <- randomMST(trueTheta = 1, itemBank = it, modules = modules, transMatrix = trans,
+                   start = start, test = test, final = final, allTheta = TRUE) 
+
  ## Plot options
+ plot(trans)
  plot(res)
  plot(res, show.path = FALSE)
  plot(res, border.col = "blue")
  plot(res, arrow.col = "green")
 
  ## Saving plot to default folder, in PDF format and with name MST
- plot(res, save.plot = TRUE, save.options = c("path","MST", "pdf"))
+ plot(res, save.plot = TRUE, save.options = c(tempdir(),"MST", "pdf"))
 }

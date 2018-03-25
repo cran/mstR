@@ -66,8 +66,8 @@ Bock, R. D., and Mislevy, R. J. (1982). Adaptive EAP estimation of ability in a 
 
 \author{
     David Magis \cr
-    Department of Education, University of Liege, Belgium \cr
-    \email{david.magis@ulg.ac.be}
+    Department of Psychology, University of Liege, Belgium \cr
+    \email{david.magis@uliege.be}
  }
 
 \seealso{
