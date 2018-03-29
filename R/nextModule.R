@@ -1,7 +1,7 @@
 nextModule<-function (itemBank, modules, transMatrix, model = NULL, current.module, 
     out, x = NULL, cutoff = NULL, theta = 0, criterion = "MFI", 
     priorDist = "norm", priorPar = c(0, 1), D = 1, range = c(-4, 
-        4), parInt = c(-4, 4, 33),randomesque=1,random.seed = NULL) 
+        4), parInt = c(-4, 4, 33), randomesque = 1, random.seed = NULL) 
 {
     crit <- switch(criterion, MFI = "MFI", MLWMI = "MLWMI", MPWMI = "MPWMI", 
         MKL = "MKL", MKLP = "MKLP", random = "random")
@@ -38,16 +38,19 @@ nextModule<-function (itemBank, modules, transMatrix, model = NULL, current.modu
             ind <- which(thr[1:(n - 1)] < theta & thr[2:n] > 
                 theta)
         }
-if (length(sel.stage)>1){
-probs<-rep((1-randomesque)/(length(sel.stage)-1),length(sel.stage))
-probs[ind]<-randomesque
-if (!is.null(random.seed)) set.seed(random.seed)
-ind<-which(c(rmultinom(1,1,probs))==1)
-}
-        final.module <- sel.stage[ind]
+        if (length(sel.stage) > 1) {
+            probs <- rep((1 - randomesque)/(length(sel.stage) - 
+                1), length(sel.stage))
+            probs[ind] <- randomesque
+            if (!is.null(random.seed)) 
+                set.seed(random.seed)
+            ind.pr <- which(c(rmultinom(1, 1, probs)) == 1)
+        }
+        final.module <- sel.stage[ind.pr]
         select <- which(modules[, final.module] == 1)
+bm<-ifelse(ind==ind.pr,TRUE,FALSE)
         res <- list(module = final.module, items = select, par = itemBank[select, 
-            ], info = theta, criterion = "cutoff")
+            ], info = theta, criterion = "cutoff",best.module=bm)
     }
     else {
         if (criterion == "MFI") {
@@ -60,17 +63,21 @@ ind<-which(c(rmultinom(1,1,probs))==1)
             maxinfo <- which(infos == max(infos))
             if (length(maxinfo) > 1) 
                 maxinfo <- sample(maxinfo, 1)
-if (length(sel.stage)>1){
-probs<-rep((1-randomesque)/(length(sel.stage)-1),length(sel.stage))
-probs[maxinfo]<-randomesque
-if (!is.null(random.seed)) set.seed(random.seed)
-maxinfo<-which(c(rmultinom(1,1,probs))==1)
-}
-            final.module <- sel.stage[maxinfo]
+            if (length(sel.stage) > 1) {
+                probs <- rep((1 - randomesque)/(length(sel.stage) - 
+                  1), length(sel.stage))
+                probs[maxinfo] <- randomesque
+                if (!is.null(random.seed)) 
+                  set.seed(random.seed)
+                maxinfo.pr <- which(c(rmultinom(1, 1, probs)) == 
+                  1)
+            }
+            final.module <- sel.stage[maxinfo.pr]
             select <- which(modules[, final.module] == 1)
+bm<-ifelse(maxinfo==maxinfo.pr,TRUE,FALSE)
             res <- list(module = final.module, items = select, 
                 par = itemBank[select, ], info = max(infos), 
-                criterion = "MFI")
+                criterion = "MFI",best.module=bm)
         }
         if (criterion == "MLWMI" | criterion == "MPWMI") {
             infos <- NULL
@@ -83,17 +90,21 @@ maxinfo<-which(c(rmultinom(1,1,probs))==1)
             maxinfo <- which(infos == max(infos))
             if (length(maxinfo) > 1) 
                 maxinfo <- sample(maxinfo, 1)
-if (length(sel.stage)>1){
-probs<-rep((1-randomesque)/(length(sel.stage)-1),length(sel.stage))
-probs[maxinfo]<-randomesque
-if (!is.null(random.seed)) set.seed(random.seed)
-maxinfo<-which(c(rmultinom(1,1,probs))==1)
-}
-            final.module <- sel.stage[maxinfo]
+            if (length(sel.stage) > 1) {
+                probs <- rep((1 - randomesque)/(length(sel.stage) - 
+                  1), length(sel.stage))
+                probs[maxinfo] <- randomesque
+                if (!is.null(random.seed)) 
+                  set.seed(random.seed)
+                maxinfo.pr <- which(c(rmultinom(1, 1, probs)) == 
+                  1)
+            }
+            final.module <- sel.stage[maxinfo.pr]
             select <- which(modules[, final.module] == 1)
+bm<-ifelse(maxinfo==maxinfo.pr,TRUE,FALSE)
             res <- list(module = final.module, items = select, 
                 par = itemBank[select, ], info = max(infos), 
-                criterion = criterion)
+                criterion = criterion,best.module=bm)
         }
         if (criterion == "MKL" | criterion == "MKLP") {
             infos <- NULL
@@ -107,25 +118,29 @@ maxinfo<-which(c(rmultinom(1,1,probs))==1)
             maxinfo <- which(infos == max(infos))
             if (length(maxinfo) > 1) 
                 maxinfo <- sample(maxinfo, 1)
-if (length(sel.stage)>1){
-probs<-rep((1-randomesque)/(length(sel.stage)-1),length(sel.stage))
-probs[maxinfo]<-randomesque
-if (!is.null(random.seed)) set.seed(random.seed)
-maxinfo<-which(c(rmultinom(1,1,probs))==1)
-}
-            final.module <- sel.stage[maxinfo]
+            if (length(sel.stage) > 1) {
+                probs <- rep((1 - randomesque)/(length(sel.stage) - 
+                  1), length(sel.stage))
+                probs[maxinfo] <- randomesque
+                if (!is.null(random.seed)) 
+                  set.seed(random.seed)
+                maxinfo.pr <- which(c(rmultinom(1, 1, probs)) == 
+                  1)
+            }
+            final.module <- sel.stage[maxinfo.pr]
             select <- which(modules[, final.module] == 1)
+bm<-ifelse(maxinfo==maxinfo.pr,TRUE,FALSE)
             res <- list(module = final.module, items = select, 
                 par = itemBank[select, ], info = max(infos), 
-                criterion = criterion)
+                criterion = criterion,best.module=bm)
         }
         if (criterion == "random") {
             final.module <- sample(sel.stage, 1)
             select <- which(modules[, final.module] == 1)
             res <- list(module = final.module, items = select, 
-                par = itemBank[select, ], info = NA, criterion = "random")
+                par = itemBank[select, ], info = NA, criterion = "random",best.module=TRUE)
         }
     }
-set.seed(NULL)
+    set.seed(NULL)
     return(res)
 }

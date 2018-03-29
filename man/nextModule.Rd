@@ -36,12 +36,13 @@ nextModule(itemBank, modules, transMatrix, model = NULL, current.module,
 }
 
 \value{
- A list with five arguments:
+ A list with six arguments:
 \item{module}{the selected module (identified by its column number in the \code{modules} argument.}
  \item{items}{the items that belong to the selected module (identified by their number in the item bank).}
  \item{par}{the matrix of item parameters of the selected items (one row per item).}
  \item{info}{either the provisional ability level or score when \code{cutoff} is not \code{NULL}; or \code{NA} when random selection is performed.}
  \item{criterion}{the value of the \code{criterion} argument.}
+\item{best.module}{logical value indicating whether the optimal module was eventually returned or not.}
  }
  
 

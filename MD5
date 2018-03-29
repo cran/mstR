@@ -1,6 +1,6 @@
-cb2d4c9af9981186bc50943c705b2e9a *DESCRIPTION
+df9a6a6a13a69eb60a2d6f8040e3ab6c *DESCRIPTION
 8ee83f82a566d8bb89bfaa4e04133a96 *NAMESPACE
-0ddb49eef29b0a21d45cad53ef8be9ac *NEWS
+0534e55ace5c04e125100ea5444ffcdf *NEWS
 b2080e015a34bbb9f1635cd00a1486ed *R/Ii.R
 aaba45401554baafdc4990bd96dca44f *R/Ji.R
 bbb0f5bd6766b9bf8eaba62bd407a842 *R/MKL.R
@@ -12,13 +12,13 @@ bbb0f5bd6766b9bf8eaba62bd407a842 *R/MKL.R
 b7caaae986ee0216b41008b7451ee48a *R/genPattern.R
 79bcde069b2235032095d3165045eb8d *R/genPolyMatrix.R
 273c081334cd48385704d21914fbdb6d *R/integrate.mstR.R
-944445043815c7ed3eacac4c4970c3cc *R/nextModule.R
-d50dde8d34124df50b54ad886971577e *R/randomMST.R
+12d5cec7b1604e434a634c8cbf0c1083 *R/nextModule.R
+f0fde84599e2a79df7fb260d450a773e *R/randomMST.R
 e0fc727334abf4dd8e58c71f01ae9cf6 *R/semTheta.R
 c2e22822be2610287a7a2c5d56a4491b *R/startModule.R
 e5668d08400bf42d71ae5b2199481505 *R/testListMST.R
 f45865313aa23a56a6346dadd6f8cf72 *R/thetaEst.R
-0a7371256b3f3e565515427e96bd88c5 *build/partial.rdb
+3418b691466403aefa1fdebcb76f0faf *build/partial.rdb
 8eb07b3ba8daa802bd0bae90099107b3 *man/Ii.Rd
 e0c601617396d35f2b3ffe50e28adee1 *man/Ji.Rd
 4a7db1aee2c59c31f34daccae9536d6e *man/MKL.Rd
@@ -30,8 +30,8 @@ f202bae409940ad03607e8729ce2be22 *man/genDichoMatrix.Rd
 39368fff6be07b48513df72e95b0c090 *man/genPattern.Rd
 75d5d59181c1f97958b6437d7da2f939 *man/genPolyMatrix.Rd
 67134e4927c33291516be7a1a9609529 *man/integrate.mstR.Rd
-c4a5391184aa6a74696c475b361f37f0 *man/nextModule.Rd
-202e6067457c6d842e703bbf0b6aa6c2 *man/randomMST.Rd
+a53830a7d4b2c8c06538a35b9c0e5577 *man/nextModule.Rd
+8fdc9361c7cf8b2f58a9ee3b8fde8162 *man/randomMST.Rd
 9bae6f0053499c03ba9c0492dfcb2a08 *man/semTheta.Rd
 c9c715c4cc7adf0f57b266d2454d6413 *man/startModule.Rd
 cb7ad31e22e73786ac1234550c06c30c *man/testListMST.Rd

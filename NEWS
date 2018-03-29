@@ -6,6 +6,32 @@
 
 
 ------------------------------------
+- Changes in mstR 1.2 (2018-03-30) -
+------------------------------------
+
+MAJOR UPDATES
+
+  o  The nextItem() function returns an additional output 
+     argument, called $best.module, which is TRUE if the
+     optimal module is returned or FALSE if another
+     module was chosen (by the 'randomesque' argument).
+
+  o  The randomMST() and print.mst() function were updated
+     to display this new outout value.
+
+  o  The randomMST() help file was updated to remove some
+     problematic code when generating an output figure.
+
+
+
+MINOR UPDATES
+
+  o  Some typos were fixed.
+
+
+
+
+------------------------------------
 - Changes in mstR 1.1 (2018-03-23) -
 ------------------------------------
 

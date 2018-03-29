@@ -83,6 +83,7 @@ randomMST(trueTheta, itemBank, modules, transMatrix, model = NULL,
  \item{randomesque}{the value of the \code{test$randomesque} argument (or its default value if missing).}
  \item{random.seed}{the value of the \code{test$random.seed} argument (or its default value if missing).}
  \item{score.range}{the value of the \code{test$score.range} argument (or its default value if missing).}
+\item{best.module}{a vector of boolean values indicating whether the optimal modules were selected or not.}
  \item{finalMethod}{the value of the \code{final$method} argument (or its default value if missing).}
  \item{finalDist}{the value of the \code{final$priorDist} argument (or its default value if missing).}
  \item{finalPar}{the value of the \code{final$priorPar} argument (or its default value if missing).}
@@ -284,7 +285,4 @@ Educational Testing Service, Princeton, USA \cr
  plot(res, show.path = FALSE)
  plot(res, border.col = "blue")
  plot(res, arrow.col = "green")
-
- ## Saving plot to default folder, in PDF format and with name MST
- plot(res, save.plot = TRUE, save.options = c(tempdir(),"MST", "pdf"))
 }

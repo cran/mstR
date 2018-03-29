@@ -1,8 +1,8 @@
 Package: mstR
 Type: Package
 Title: Procedures to Generate Patterns under Multistage Testing
-Version: 1.1
-Date: 2018-03-23
+Version: 1.2
+Date: 2018-03-29
 Author: David Magis (U Liege, Belgium), Duanli Yan (ETS, USA), Alina von Davier (ACTNext, USA)
 Maintainer: David Magis <david.magis@uliege.be>
 Depends: R (>= 2.8.0)
@@ -10,6 +10,9 @@ Description: Generation of response patterns under dichotomous and polytomous co
 License: GPL (>= 2)
 LazyLoad: yes
 NeedsCompilation: no
-Packaged: 2018-03-23 20:38:48 UTC; David
+Packaged: 2018-03-29 17:04:42 UTC; David
+X-CRAN-Comment: Archived on 2018-03-28 for policy violation.
+ .
+ Leaves .pdf file in /tmp
 Repository: CRAN
-Date/Publication: 2018-03-25 15:54:22 UTC
+Date/Publication: 2018-03-29 20:31:49 UTC

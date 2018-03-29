@@ -117,6 +117,7 @@ MODULE<-pr0$module
         else SETH <- NA
         thProv <- TH
         enter.mst <- TRUE
+best.mod<-TRUE
 if (sum(transMatrix[MODULE,])==0) enter.mst<-FALSE
         if (!enter.mst) {
 if (final$method!="score"){
@@ -149,7 +150,7 @@ confIntFinal<-c(NA,NA)
                 provD = test$D, moduleSelect = test$moduleSelect, 
                 constantPattern = test$constantPatt, cutoff=test$cutoff,
                 randomesque=test$randomesque,random.seed=test$random.seed,
-                score.range=test$score.range,
+                score.range=test$score.range,best.module=best.mod,
                 finalMethod = final$method, finalDist = final$priorDist, 
                 finalPar = final$priorPar, finalRange = final$range, 
                 finalD = final$D, finalAlpha = final$alpha, save.output = save.output, 
@@ -165,6 +166,7 @@ confIntFinal<-c(NA,NA)
                   D = test$D, range = test$range,randomesque=test$randomesque,
                   random.seed=test$random.seed)
                 ITEMS <- c(ITEMS, pr$items)
+best.mod<-c(best.mod,pr$best.module)
 ITEMS.PER.MOD<-c(ITEMS.PER.MOD,length(pr$items))
                 PAR <- rbind(PAR, pr$par)
                 if (!is.null(responses)) 
@@ -226,7 +228,7 @@ transMatrix=transMatrix,
                 provD = test$D, moduleSelect = test$moduleSelect, 
                 constantPattern = test$constantPatt, cutoff=test$cutoff,
                 randomesque=test$randomesque,random.seed=test$random.seed,
-                score.range=test$score.range,
+                score.range=test$score.range,best.module=best.mod,
                 finalMethod = final$method, finalDist = final$priorDist, 
                 finalPar = final$priorPar, finalRange = final$range, 
                 finalD = final$D, finalAlpha = final$alpha, save.output = save.output, 
@@ -418,6 +420,8 @@ for (co in 1:length(x$selected.modules)){
 cat("\n","  Stage ",co,":","\n",sep="")
 cat("    Module administered:",x$selected.modules[co],"\n")
 cat("    Number of items in module ",x$selected.modules[co],": ",x$items.per.module[co]," items","\n",sep="")
+boo<-ifelse(x$best.module[co],"yes","no")
+cat("    Optimal module:",boo,"\n")
 cat("    Items and responses:","\n")
 bsup<-binf+x$items.per.module[co]-1
 its<-x$testItems[binf:bsup]
